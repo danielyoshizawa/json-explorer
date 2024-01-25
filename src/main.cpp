@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <curl/curl.h>
+#include <simdjson.h>
 
 int main()
 {
@@ -19,6 +20,13 @@ int main()
   }
 
   std::cout << std::endl;
+
+  simdjson::ondemand::parser parser;
+  auto json = R"({ "x" : 1, "y" : 2})"_padded;
+  auto doc = parser.iterate(json);
+  double y = doc.find_field("y"); // The cursor is now after the 2 (at })
+
+  std::cout << y << std::endl;
 
   return 0;
 }
