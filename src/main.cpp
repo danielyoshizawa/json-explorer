@@ -7,6 +7,7 @@
 #include <simdjson.h>
 #include <stdlib.h> // for realloc
 #include <string.h> // for memcpy
+#include "explorer.hpp"
 
 struct memory
 {
@@ -36,6 +37,9 @@ static size_t callback(void *data, size_t size, size_t nmemb, void *clientp)
 
 int main()
 {
+  std::string endpoint;
+  std::cout << "Enter endpoint address : " << std::endl;
+  std::cin >> endpoint; // e.g. "https://dogapi.dog/api/v2/facts"
   // Declaring variables
   simdjson::padded_string resource;
   // Fetching resouce from the internet
@@ -43,7 +47,7 @@ int main()
   if (curl) {
     struct memory chunk = {0};
     CURLcode response;
-    curl_easy_setopt(curl, CURLOPT_URL, "https://dogapi.dog/api/v2/facts");
+    curl_easy_setopt(curl, CURLOPT_URL, endpoint.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, static_cast<void *>(&chunk));
     response = curl_easy_perform(curl);
@@ -60,43 +64,15 @@ int main()
     curl_easy_cleanup(curl);
   }
 
-  // Parsing content
-  simdjson::ondemand::parser parser;
-  simdjson::ondemand::document doc;
-  auto error = parser.iterate(resource).get(doc);
-  if (error)
+  json::explorer explorer{resource};
+
+  std::string path{};
+  // TODO : Implement commands (cd, ls and quit|exit)
+  while (true)
   {
-    std::cerr << error << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  simdjson::ondemand::array data;
-  error = doc.find_field("data").get(data);
-  if (error)
-  {
-    std::cerr << "## Error : " << error << std::endl;
-    return EXIT_FAILURE;
-  }
-
-  // Printing elements
-  for (auto elem : data) {
-    simdjson::ondemand::object attributes;
-    error = elem.find_field("attributes").get(attributes);
-    if (error)
-    {
-      std::cerr << "## Error : " << error << std::endl;
-      return EXIT_FAILURE;
-    }
-
-    simdjson::ondemand::value body;
-    error = attributes.find_field("body").get(body);
-    if (error)
-    {
-      std::cerr << "## Error : " << error << std::endl;
-      return EXIT_FAILURE;
-    }
-
-    std::cout << simdjson::to_json_string(body) << std::endl;
+    std::cout << "Path : " << std::endl;
+    std::cin >> path;
+    explorer.path(path);
   }
 
   return EXIT_SUCCESS;
