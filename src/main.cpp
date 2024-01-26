@@ -47,9 +47,13 @@ int main()
   if (curl) {
     struct memory chunk = {0};
     CURLcode response;
+    struct curl_slist *list = NULL;
     curl_easy_setopt(curl, CURLOPT_URL, endpoint.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, static_cast<void *>(&chunk));
+    // List of headers
+    list = curl_slist_append(list, "Accept: application/json");
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
     response = curl_easy_perform(curl);
     if (response)
     {
@@ -60,7 +64,7 @@ int main()
     }
 
     free(chunk.response);
-
+    curl_slist_free_all(list);
     curl_easy_cleanup(curl);
   }
 
