@@ -23,6 +23,7 @@ namespace json
     std::string current_path() const;
     std::string show_current();
     void home();
+    void previous();
   };
 };
 

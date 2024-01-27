@@ -125,6 +125,11 @@ int main()
           explorer.home();
           continue;
         }
+        if (path.compare("..") == 0)
+        {
+          explorer.previous();
+          continue;
+        }
         explorer.path(path); // TODO : recover from failure
       } else {
         std::cout << "Invalid command - should be cd <path>" << std::endl;

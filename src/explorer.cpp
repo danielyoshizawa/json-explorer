@@ -40,3 +40,8 @@ void json::explorer::home()
 {
   path_v.clear();
 }
+
+void json::explorer::previous()
+{
+  path_v.pop_back();
+}
