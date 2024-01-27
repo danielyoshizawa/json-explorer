@@ -120,6 +120,11 @@ int main()
       {
         command = "cd";
         path = input.substr(split_pos + 1);
+        if (path.compare("/") == 0)
+        {
+          explorer.home();
+          continue;
+        }
         explorer.path(path); // TODO : recover from failure
       } else {
         std::cout << "Invalid command - should be cd <path>" << std::endl;

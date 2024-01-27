@@ -35,3 +35,8 @@ std::string json::explorer::show_current()
 
   return ss.str();
 }
+
+void json::explorer::home()
+{
+  path_v.clear();
+}
