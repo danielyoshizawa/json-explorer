@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include "../explorer.hpp"
+#include "../model/explorer/explorer.hpp"
 
 TEST_CASE("Walking the walk", "[explorer]")
 {
