@@ -5,7 +5,7 @@
 // in a next iteration we have intention to create one.
 
 #include "controller.hpp"
-#include "../explorer.hpp"
+#include "../model/explorer/explorer.hpp"
 #include "../model/request/request.hpp"
 
 // Main loop, in case of unrecoverable error std::variant<std::string> is returned
