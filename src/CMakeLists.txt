@@ -28,5 +28,6 @@ set_property(TARGET "${NAME}" PROPERTY CXX_STANDARD_REQUIRED YES)
 include(CTest)
 
 add_subdirectory(test)
+add_subdirectory(model)
 
 add_test(NAME test COMMAND json-explorer-test)
