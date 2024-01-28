@@ -4,16 +4,14 @@
 json::explorer::explorer(const simdjson::padded_string &resource)
 {
   auto error = parser.iterate(resource).get(doc);
-  if (error)
+  if (error) // TODO : Kinda useless, maybe let it throw
   {
     std::cerr << error << std::endl;
   }
 }
 
-// We will only go forward on the first cut
 void json::explorer::path(const std::string & path)
 {
-  std::string current_path;
   path_v.push_back(path);
 }
 
