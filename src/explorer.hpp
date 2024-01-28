@@ -18,9 +18,11 @@ namespace json
     explorer(const simdjson::padded_string &resource);
     ~explorer() = default;
 
-    // TODO : Overload operator >> to simplify thing
     void path(const std::string & path);
     std::string current_path() const;
+    std::string show_current();
+    void home();
+    void previous();
   };
 };
 
