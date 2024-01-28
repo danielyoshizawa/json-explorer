@@ -10,12 +10,11 @@ namespace json
   namespace command
   {
     // Command interface
-    template<class ... Arguments>
     class command
     {
     public:
       virtual ~command() = default;
-      virtual std::variant<std::monostate, std::string> execute(Arguments &&...args) = 0;
+      virtual std::variant<std::monostate, std::string> execute(const std::string & path, std::string & result) = 0;
     };
   }
 }

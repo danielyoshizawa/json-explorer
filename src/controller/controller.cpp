@@ -10,6 +10,7 @@
 
 // TEST
 #include "../model/command/ls.hpp"
+#include "../model/command/cd.hpp"
 
 // Main loop, in case of unrecoverable error std::variant<std::string> is returned
 // caller is responsible to treat this kind of errors.
@@ -25,14 +26,14 @@ std::variant<std::monostate, std::string> json::controller::execute()
 
   json::explorer explorer{resource};
 
-  // TEST
-  std::string ls_result{};
-  json::command::ls ls_command{explorer, ls_result};
-  // ls.execute();
+  // TODO : Move to a pool (std::map<name, command>)
+  json::command::ls ls_command{explorer};
+  json::command::cd cd_command{explorer};
 
   std::string path{};
   std::string input{};
   std::string command{};
+  std::string command_result{};
   do
   {
     std::cout << "$" << explorer.current_path() << ": ";
@@ -45,8 +46,8 @@ std::variant<std::monostate, std::string> json::controller::execute()
       if (input.compare("ls") == 0)
       {
         // TODO : May throw, need to recover from it
-        ls_command.execute();
-        std::cout << ls_result << std::endl;
+        ls_command.execute(path, command_result); // Model
+        std::cout << command_result << std::endl; // View
         continue;
       } else {
         std::cout << "Invalid command - should be ls" << std::endl;
@@ -80,17 +81,7 @@ std::variant<std::monostate, std::string> json::controller::execute()
       {
         command = "cd";
         path = input.substr(split_pos + 1);
-        if (path.compare("/") == 0)
-        {
-          explorer.home();
-          continue;
-        }
-        if (path.compare("..") == 0)
-        {
-          explorer.previous();
-          continue;
-        }
-        explorer.path(path); // TODO : recover from failure
+        cd_command.execute(path, command_result);
       } else {
         std::cout << "Invalid command - should be cd <path>" << std::endl;
       }
