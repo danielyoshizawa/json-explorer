@@ -8,6 +8,9 @@
 #include "../model/explorer/explorer.hpp"
 #include "../model/request/request.hpp"
 
+// TEST
+#include "../model/command/ls.hpp"
+
 // Main loop, in case of unrecoverable error std::variant<std::string> is returned
 // caller is responsible to treat this kind of errors.
 std::variant<std::monostate, std::string> json::controller::execute()
@@ -21,6 +24,11 @@ std::variant<std::monostate, std::string> json::controller::execute()
   simdjson::padded_string resource {req.load(endpoint)}; // TODO : May throw
 
   json::explorer explorer{resource};
+
+  // TEST
+  std::string ls_result{};
+  json::command::ls ls_command{explorer, ls_result};
+  // ls.execute();
 
   std::string path{};
   std::string input{};
@@ -37,7 +45,8 @@ std::variant<std::monostate, std::string> json::controller::execute()
       if (input.compare("ls") == 0)
       {
         // TODO : May throw, need to recover from it
-        std::cout << explorer.show_current() << std::endl;
+        ls_command.execute();
+        std::cout << ls_result << std::endl;
         continue;
       } else {
         std::cout << "Invalid command - should be ls" << std::endl;

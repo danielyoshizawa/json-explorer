@@ -2,18 +2,20 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include <variant>
+#include <string>
+
 namespace json
 {
   namespace command
   {
     // Command interface
+    template<class ... Arguments>
     class command
     {
     public:
       virtual ~command() = default;
-
-      template<typename Agent, typename Result, typename ... Arguments>
-      virtual std::variant<std::monostate, std::string> execute( Agent & agent, Result & result , const Arguments & ... ) = 0;
+      virtual std::variant<std::monostate, std::string> execute(Arguments &&...args) = 0;
     };
   }
 }

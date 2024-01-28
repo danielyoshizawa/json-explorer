@@ -1,1 +1,1 @@
-target_sources("${NAME}" PUBLIC command.hpp)
+target_sources("${NAME}" PUBLIC command.hpp ls.cpp)
