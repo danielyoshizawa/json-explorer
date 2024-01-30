@@ -9,20 +9,21 @@ namespace json
   class explorer
   {
   private:
-    simdjson::ondemand::parser parser;
-    simdjson::ondemand::document doc;
+    simdjson::ondemand::parser parser{};
+    simdjson::ondemand::document doc{};
     std::vector<std::string> path_v;
-  private:
-    explorer() = delete;
-  public:
-    explorer(const simdjson::padded_string &resource);
-    ~explorer() = default;
+    simdjson::padded_string current_resource;
 
-    void path(const std::string & path);
+  public:
+    explorer() = default;
+    ~explorer() = default;
+    void path(const std::string &path);
     std::string current_path() const;
     std::string show_current();
     void home();
     void previous();
+    // TODO : Return errors std::variant
+    void parse(const std::string &resource);
   };
 };
 
