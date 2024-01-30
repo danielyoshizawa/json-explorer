@@ -1,12 +1,11 @@
 // Controller
 //
 // Controls the application flow
-// For this first cut we won't implement a dedicated view,
-// in a next iteration we have intention to create one.
 
 #include "controller.hpp"
 #include "../model/explorer/explorer.hpp"
 #include "../model/request/request.hpp"
+#include "../view/view.hpp"
 
 // TEST
 #include "../model/command/ls.hpp"
@@ -17,6 +16,7 @@
 std::variant<std::monostate, std::string> json::controller::execute()
 {
   std::variant<std::monostate, std::string> result;
+  // TODO : Move to Load Command
   std::string endpoint;
   std::cout << "Enter endpoint address : " << std::endl;
   std::cin >> endpoint; // e.g. "https://dogapi.dog/api/v2/facts"
@@ -30,63 +30,32 @@ std::variant<std::monostate, std::string> json::controller::execute()
   json::command::ls ls_command{explorer};
   json::command::cd cd_command{explorer};
 
-  std::string path{};
-  std::string input{};
-  std::string command{};
   std::string command_result{};
+  json::view view{};
+  json::input::result view_result{};
   do
   {
-    std::cout << "$" << explorer.current_path() << ": ";
-    std::getline(std::cin, input);
+     view_result = view.next(explorer.current_path());
 
     // TODO : Extract method
-    if (auto ls = input.find("ls"); ls != std::string::npos)
+    if (view_result.is_command("ls"))
     {
-      // found ls
-      if (input.compare("ls") == 0)
+      // TODO : May throw, need to recover from it
+      ls_command.execute(view_result.parameter, command_result); // Model
+      view.print(command_result);
+      continue;
+    }
+    if (view_result.is_command("cd"))
+    {
+      if (view_result.parameter.length()) // Maybe empty cd would stay at the same place
       {
-        // TODO : May throw, need to recover from it
-        ls_command.execute(path, command_result); // Model
-        std::cout << command_result << std::endl; // View
-        continue;
+        cd_command.execute(view_result.parameter, command_result);
       } else {
-        std::cout << "Invalid command - should be ls" << std::endl;
+        // TODO : Change how errors are treated, for now print in the view
+        view.print("Invalid command - should be cd <path>");
       }
     }
-    if (auto quit = input.find("quit"); quit != std::string::npos)
-    {
-      // found quit
-      if (input.compare("quit") == 0)
-      {
-        command = "quit";
-        continue;
-      } else {
-        std::cout << "Invalid command - should be quit" << std::endl;
-      }
-    }
-    if (auto exit = input.find("exit"); exit != std::string::npos)
-    {
-      // found exit
-      if (input.compare("exit") == 0)
-      {
-        command = "exit";
-        continue;
-      } else {
-        std::cout << "Invalid command - should be exit" << std::endl;
-      }
-    }
-    if (auto cd = input.find("cd"); cd != std::string::npos)
-    {
-      if (auto split_pos = input.find_first_of(' '); split_pos != std::string::npos)
-      {
-        command = "cd";
-        path = input.substr(split_pos + 1);
-        cd_command.execute(path, command_result);
-      } else {
-        std::cout << "Invalid command - should be cd <path>" << std::endl;
-      }
-    }
-  } while (command.compare("exit") != 0 && command.compare("quit") != 0);
+  } while (!view_result.is_command("exit") && !view_result.is_command("quit"));
 
   return result;
 }
