@@ -29,5 +29,6 @@ include(CTest)
 add_subdirectory(test)
 add_subdirectory(model)
 add_subdirectory(controller)
+add_subdirectory(view)
 
 add_test(NAME test COMMAND json-explorer-test)
